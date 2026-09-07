@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste de Arquitetura - Calculadora</title>
+    <style>
+        body { font-family: Arial; text-align: center; margin-top: 50px; }
+        input, select, button { padding: 10px; font-size: 16px; margin: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>Calculadora Arquitetural</h2>
+    
+    <input type="number" id="valorA" placeholder="Número 1" value="10">
+    
+    <select id="operacao">
+        <option value="somar">+</option>
+        <option value="subtrair">-</option>
+        <option value="multiplicar">*</option>
+        <option value="dividir">/</option>
+    </select>
+    
+    <input type="number" id="valorB" placeholder="Número 2" value="5">
+    
+    <br><br>
+    <button onclick="enviarParaServidor()">Calcular</button>
+
+    <h1 id="resultadoTexto" style="color: blue;"></h1>
+
+    <script>
+        async function enviarParaServidor() {
+            const num1 = parseFloat(document.getElementById('valorA').value);
+            const num2 = parseFloat(document.getElementById('valorB').value);
+            const operacao = document.getElementById('operacao').value;
+
+            const resposta = await fetch('/calcular', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ num1, num2, operacao })
+            });
+
+            const dados = await resposta.json();
+            
+            if(dados.erro) {
+                document.getElementById('resultadoTexto').innerText = "Erro: " + dados.erro;
+                document.getElementById('resultadoTexto').style.color = "red";
+            } else {
+                document.getElementById('resultadoTexto').innerText = "Resultado: " + dados.resultado;
+                document.getElementById('resultadoTexto').style.color = "green";
+            }
+        }
+    </script>
+</body>
+</html>
