@@ -8,6 +8,14 @@ class Integrante(Usuario):
         super().__init__(nome, senha, email)
         self.pontos_de_esforco = pontos_de_esforco
 
-    def cadastrar(self):
-        self.db.registrarUsuario(self.nome, self.senha, self.email)
-        self.db.registrarIntegrante(self.nome, self.senha, self.email, self.pontos_de_esforco)
+    def get_pontos_de_esforco(self):
+        return self.__pontos_de_esforco
+
+    def set_pontos_de_esforco(self, novo_limite):
+        if novo_limite >= 0:
+            self.__pontos_de_esforco = novo_limite
+        else:
+            raise ValueError("O limite de esforco nao pode ser negativo.")
+
+    def get_papel(self):
+        return "Integrante"

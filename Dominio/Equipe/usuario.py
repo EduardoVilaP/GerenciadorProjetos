@@ -1,17 +1,24 @@
 from abc import ABC, abstractmethod
-from Persistencia.FachadaBD.bancoDeDados import BancoDados
 
 #Classe abstrata usuario
 class Usuario(ABC):
 
-    #Metodo construtor que sera chamado por integrante e gerente
+    # Metodo construtor que sera chamado por integrante e gerente
     def __init__(self, nome, senha, email):
-        self.nome = nome
-        self.senha = senha
-        self.email = email
-        self.db = BancoDados()
+        self.__nome = nome
+        self.__senha = senha
+        self.__email = email
+
+    def get_nome(self):
+        return self.__nome
+        
+    def get_email(self):
+        return self.__email
+
+    def validar_senha(self, senha_teste):
+        return self.__senha == senha_teste
 
     @abstractmethod
-    def cadastrar(self):
-        #Metodo abstrato que deve ser implementado por integrantes e gerentes em si
+    def get_papel(self):
+        # Classes filhas retornam seu papel
         pass

@@ -7,6 +7,5 @@ class Gerente(Usuario):
     def __init__(self, nome, senha, email):
         super().__init__(nome, senha, email)
 
-    def cadastrar(self):
-        self.db.registrarUsuario(self.nome, self.senha, self.email)
-        self.db.registrarGerente(self.nome, self.senha, self.email)
+    def get_papel(self):
+        return "Gerente"

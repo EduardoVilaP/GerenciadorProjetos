@@ -1,5 +1,3 @@
-
-
 #Criando um singleton para servir como banco de dados enquannto o programa esta rodando
 class BancoDados:
 
@@ -11,23 +9,30 @@ class BancoDados:
         if cls.instancia is None:
             #Crianndo a unica instancia dessa classe
             cls.instancia = super().__new__(cls)
+
             #Criando dicionarios para guardar os usuarios totais, os integrantes e os gerentes
             cls.instancia.usuarios = {}
-            cls.instancia.integrantes = {}
-            cls.instancia.gerentes = {}
+
+            # Dicionario para salvar as tarefas
+            cls.instancia.tarefas = {}
+            # ID de cada tarefa
+            cls.instancia.id_tarefa_seq = 1
+
         return cls.instancia
 
     #Metodo para cadastrar usuarios
-    def registrarUsuario(self, nome, senha, email):
-        self.usuarios[email] = {"nome": nome, "senha": senha}
+    def registrarUsuario(self, usuario_objeto):
+        email = usuario_objeto.get_email()
+        self.usuarios[email] = usuario_objeto
         return
 
-    #Metodo para cadastrar gerentes
-    def registrarGerente(self, nome, senha, email):
-        self.gerente[email] = {"nome": nome, "senha": senha}
-        return
+    # Retorna o objeto instanciado com todos os metodos dele
+    def buscar_usuario(self, email):
+        return self.usuarios.get(email)
 
-    #Metodo para cadastrar integrantes
-    def registrarIntegrante(self, nome, senha, email, pontos_de_esforco):
-        self.integrante[email] = {"nome": nome, "senha": senha, "pontos de esforço" : pontos_de_esforco}
-        return
+    # Registra nova tarefa e retorna seu ID
+    def registrar_tarefa(self, tarefa_objeto):
+        id_atual = self.id_tarefa_seq
+        self.tarefas[id_atual] = tarefa_objeto
+        self.id_tarefa_seq += 1
+        return id_atual
