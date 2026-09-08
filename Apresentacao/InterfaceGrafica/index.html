@@ -2,54 +2,178 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Teste de Arquitetura - Calculadora</title>
+    <title>Gestão de Projetos</title>
     <style>
-        body { font-family: Arial; text-align: center; margin-top: 50px; }
-        input, select, button { padding: 10px; font-size: 16px; margin: 5px; }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f4f9; }
+        h1 { text-align: center; color: #333; }
+        .section { background: #fff; border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #28a745; color: white; border: none; padding: 10px 15px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; }
+        button:hover { background-color: #218838; }
+        .message { margin-top: 10px; font-weight: bold; text-align: center; }
+        .success { color: green; }
+        .error { color: red; }
     </style>
 </head>
 <body>
+    <h1>Sistema de Gestão de Projetos</h1>
 
-    <h2>Calculadora Arquitetural</h2>
-    
-    <input type="number" id="valorA" placeholder="Número 1" value="10">
-    
-    <select id="operacao">
-        <option value="somar">+</option>
-        <option value="subtrair">-</option>
-        <option value="multiplicar">*</option>
-        <option value="dividir">/</option>
-    </select>
-    
-    <input type="number" id="valorB" placeholder="Número 2" value="5">
-    
-    <br><br>
-    <button onclick="enviarParaServidor()">Calcular</button>
+    <div class="section" id="login-section">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="login-email">Email:</label>
+            <input type="email" id="login-email" placeholder="Digite seu email">
+        </div>
+        <div class="form-group">
+            <label for="login-senha">Senha:</label>
+            <input type="password" id="login-senha" placeholder="Digite sua senha">
+        </div>
+        <button onclick="fazerLogin()">Entrar</button>
+        <div id="login-msg" class="message"></div>
+    </div>
 
-    <h1 id="resultadoTexto" style="color: blue;"></h1>
+    <div class="section" id="cadastro-integrante-section">
+        <h2>Cadastrar Integrante</h2>
+        <div class="form-group">
+            <label for="int-nome">Nome:</label>
+            <input type="text" id="int-nome" placeholder="Nome completo">
+        </div>
+        <div class="form-group">
+            <label for="int-email">Email:</label>
+            <input type="email" id="int-email" placeholder="Email corporativo">
+        </div>
+        <div class="form-group">
+            <label for="int-senha">Senha:</label>
+            <input type="password" id="int-senha" placeholder="Crie uma senha">
+        </div>
+        <div class="form-group">
+            <label for="int-esforco">Pontos de Esforço (Capacidade):</label>
+            <input type="number" id="int-esforco" placeholder="Ex: 10">
+        </div>
+        <button onclick="cadastrarIntegrante()">Cadastrar</button>
+        <div id="cadastro-msg" class="message"></div>
+    </div>
+
+    <div class="section" id="criar-tarefa-section">
+        <h2>Criar Tarefa</h2>
+        <div class="form-group">
+            <label for="tar-titulo">Título:</label>
+            <input type="text" id="tar-titulo" placeholder="Título da tarefa">
+        </div>
+        <div class="form-group">
+            <label for="tar-carga">Carga (Pontos de Esforço Exigidos):</label>
+            <input type="number" id="tar-carga" placeholder="Ex: 5">
+        </div>
+        <div class="form-group">
+            <label for="tar-estimativa">Estimativa (Tempo de conclusão):</label>
+            <input type="text" id="tar-estimativa" placeholder="Ex: 3 dias">
+        </div>
+        <div class="form-group">
+            <label for="tar-status">Status Inicial:</label>
+            <select id="tar-status">
+                <option value="Pendente">Pendente</option>
+                <option value="Em Andamento">Em Andamento</option>
+                <option value="Concluída">Concluída</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="tar-prereq">Pré-requisitos (Títulos separados por vírgula):</label>
+            <input type="text" id="tar-prereq" placeholder="Ex: Tarefa A, Tarefa B">
+        </div>
+        <button onclick="criarTarefa()">Adicionar Tarefa</button>
+        <div id="tarefa-msg" class="message"></div>
+    </div>
 
     <script>
-        async function enviarParaServidor() {
-            const num1 = parseFloat(document.getElementById('valorA').value);
-            const num2 = parseFloat(document.getElementById('valorB').value);
-            const operacao = document.getElementById('operacao').value;
-
-            const resposta = await fetch('/calcular', {
+    async function fazerLogin() {
+        const email = document.getElementById('login-email').value;
+        const senha = document.getElementById('login-senha').value;
+        
+        try {
+            const resposta = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ num1, num2, operacao })
+                body: JSON.stringify({ email, senha })
             });
-
             const dados = await resposta.json();
             
-            if(dados.erro) {
-                document.getElementById('resultadoTexto').innerText = "Erro: " + dados.erro;
-                document.getElementById('resultadoTexto').style.color = "red";
+            if(resposta.ok) {
+                mostrarMensagem('login-msg', dados.mensagem, 'success');
             } else {
-                document.getElementById('resultadoTexto').innerText = "Resultado: " + dados.resultado;
-                document.getElementById('resultadoTexto').style.color = "green";
+                mostrarMensagem('login-msg', dados.erro, 'error');
             }
+        } catch (error) {
+            mostrarMensagem('login-msg', 'Erro de conexão com o servidor.', 'error');
         }
-    </script>
+    }
+
+    async function cadastrarIntegrante() {
+        const nome = document.getElementById('int-nome').value;
+        const email = document.getElementById('int-email').value;
+        const senha = document.getElementById('int-senha').value;
+        const esforco = parseInt(document.getElementById('int-esforco').value);
+
+        try {
+            const resposta = await fetch('/api/integrantes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, email, senha, pontos_de_esforco: esforco })
+            });
+            const dados = await resposta.json();
+            
+            if(resposta.ok) {
+                mostrarMensagem('cadastro-msg', dados.mensagem, 'success');
+                document.getElementById('int-nome').value = '';
+                document.getElementById('int-email').value = '';
+                document.getElementById('int-senha').value = '';
+                document.getElementById('int-esforco').value = '';
+            } else {
+                mostrarMensagem('cadastro-msg', dados.erro, 'error');
+            }
+        } catch (error) {
+            mostrarMensagem('cadastro-msg', 'Erro de conexão.', 'error');
+        }
+    }
+
+    async function criarTarefa() {
+        const titulo = document.getElementById('tar-titulo').value;
+        const carga = parseInt(document.getElementById('tar-carga').value);
+        const estimativa = document.getElementById('tar-estimativa').value;
+        const status = document.getElementById('tar-status').value;
+        const prereqRaw = document.getElementById('tar-prereq').value;
+        
+        const preRequisitos = prereqRaw ? prereqRaw.split(',').map(s => s.trim()) : [];
+
+        try {
+            const resposta = await fetch('/api/tarefas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titulo, carga, estimativa, status, pre_requisitos: preRequisitos })
+            });
+            const dados = await resposta.json();
+            
+            if(resposta.ok) {
+                mostrarMensagem('tarefa-msg', dados.mensagem, 'success');
+                document.getElementById('tar-titulo').value = '';
+                document.getElementById('tar-carga').value = '';
+                document.getElementById('tar-estimativa').value = '';
+                document.getElementById('tar-prereq').value = '';
+            } else {
+                mostrarMensagem('tarefa-msg', dados.erro, 'error');
+            }
+        } catch (error) {
+            mostrarMensagem('tarefa-msg', 'Erro de conexão.', 'error');
+        }
+    }
+
+    function mostrarMensagem(id, texto, classe) {
+        const el = document.getElementById(id);
+        el.innerText = texto;
+        el.className = `message ${classe}`;
+        setTimeout(() => { el.innerText = ''; }, 4000);
+    }
+</script>
 </body>
 </html>
