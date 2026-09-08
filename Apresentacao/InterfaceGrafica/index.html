@@ -20,6 +20,8 @@
 <body>
     <h1>Sistema de Gestão de Projetos</h1>
 
+    <button onclick="fazerLogout()" style="background-color: #dc3545; width: auto; margin-bottom: 20px;">Sair (Logout)</button>
+
     <div class="section" id="login-section">
         <h2>Login</h2>
         <div class="form-group">
@@ -100,6 +102,7 @@
             const dados = await resposta.json();
             
             if(resposta.ok) {
+                localStorage.setItem('usuario_logado', email); 
                 mostrarMensagem('login-msg', dados.mensagem, 'success');
             } else {
                 mostrarMensagem('login-msg', dados.erro, 'error');
@@ -115,11 +118,23 @@
         const senha = document.getElementById('int-senha').value;
         const esforco = parseInt(document.getElementById('int-esforco').value);
 
+        const usuarioLogado = localStorage.getItem('usuario_logado');
+
+        if (!usuarioLogado) {
+            mostrarMensagem('cadastro-msg', 'Você precisa fazer login primeiro.', 'error');
+            return;
+        }
+
         try {
             const resposta = await fetch('/api/integrantes', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nome, email, senha, pontos_de_esforco: esforco })
+                body: JSON.stringify({
+                    nome,
+                    email,
+                    senha,
+                    pontos_de_esforco: esforco, usuario_logado: usuarioLogado
+                })
             });
             const dados = await resposta.json();
             
@@ -143,14 +158,23 @@
         const estimativa = document.getElementById('tar-estimativa').value;
         const status = document.getElementById('tar-status').value;
         const prereqRaw = document.getElementById('tar-prereq').value;
-        
         const preRequisitos = prereqRaw ? prereqRaw.split(',').map(s => s.trim()) : [];
+
+        const usuarioLogado = localStorage.getItem('usuario_logado');
+        
+        if (!usuarioLogado) {
+            mostrarMensagem('tarefa-msg', 'Você precisa fazer login primeiro.', 'error');
+            return;
+        }
 
         try {
             const resposta = await fetch('/api/tarefas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ titulo, carga, estimativa, status, pre_requisitos: preRequisitos })
+                body: JSON.stringify({ 
+                    titulo, carga, estimativa, status, pre_requisitos: preRequisitos,
+                    usuario_logado: usuarioLogado
+                })
             });
             const dados = await resposta.json();
             
@@ -173,6 +197,12 @@
         el.innerText = texto;
         el.className = `message ${classe}`;
         setTimeout(() => { el.innerText = ''; }, 4000);
+    }
+
+    function fazerLogout() {
+        // Sai do usuario atual
+        localStorage.removeItem('usuario_logado');
+        alert("Você saiu do sistema.");
     }
 </script>
 </body>
