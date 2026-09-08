@@ -70,9 +70,9 @@ def criar_tarefa():
     dados = request.json
 
     email_solicitante = dados.get('usuario_logado')
-    solicitante = banco.buscar_usuario(email_solicitante)
+    usuario_requisitante = banco.buscar_usuario(email_solicitante)
 
-    if not solicitante or solicitante.get_papel() != "Gerente":
+    if not usuario_requisitante or usuario_requisitante.get_papel() != "Gerente":
         return jsonify({"erro": "Apenas gerentes podem criar tarefas."}), 403
     
     try:
@@ -88,7 +88,7 @@ def criar_tarefa():
             nova_tarefa.atualizar_status(status_enviado)
             
         id_gerado = banco.registrar_tarefa(nova_tarefa)
-        return jsonify({"sucesso": True, "mensagem": f"Tarefa '{nova_tarefa.get_titulo()}' (ID: {id_gerado}) criada com sucesso!"})
+        return jsonify({"sucesso": True, "mensagem": f"Tarefa '{nova_tarefa.get_titulo()}' (ID: {id_gerado}) criada com sucesso por {usuario_requisitante.get_nome()}!"})
         
     except ValueError as e:
         return jsonify({"erro": str(e)}), 400
