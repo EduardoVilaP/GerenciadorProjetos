@@ -60,6 +60,20 @@ def cadastrar_integrante():
 def criar_tarefa():
     dados = request.json
     
+    email_logado = dados.get('usuario_logado')
+    
+    usuario_requisitante = None
+    for u in usuarios:
+        if u.get_email() == email_logado:
+            usuario_requisitante = u
+            break
+            
+    if not usuario_requisitante:
+        return jsonify({"erro": "Usuário não encontrado. Faça login novamente."}), 401
+        
+    if usuario_requisitante.get_papel() != 'Gerente':
+        return jsonify({"erro": "Acesso negado: Apenas gerentes podem criar tarefas."}), 403
+    
     try:
         nova_tarefa = Tarefa(
             titulo=dados.get('titulo'),
@@ -73,7 +87,7 @@ def criar_tarefa():
             nova_tarefa.atualizar_status(status_enviado)
             
         tarefas.append(nova_tarefa)
-        return jsonify({"sucesso": True, "mensagem": f"Tarefa '{nova_tarefa.get_titulo()}' criada com sucesso!"})
+        return jsonify({"sucesso": True, "mensagem": f"Tarefa '{nova_tarefa.get_titulo()}' criada com sucesso por {usuario_requisitante.get_nome()}!"})
         
     except ValueError as e:
         return jsonify({"erro": str(e)}), 400

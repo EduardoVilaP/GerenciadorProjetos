@@ -100,6 +100,7 @@
             const dados = await resposta.json();
             
             if(resposta.ok) {
+                localStorage.setItem('usuario_logado', email); 
                 mostrarMensagem('login-msg', dados.mensagem, 'success');
             } else {
                 mostrarMensagem('login-msg', dados.erro, 'error');
@@ -143,14 +144,23 @@
         const estimativa = document.getElementById('tar-estimativa').value;
         const status = document.getElementById('tar-status').value;
         const prereqRaw = document.getElementById('tar-prereq').value;
-        
         const preRequisitos = prereqRaw ? prereqRaw.split(',').map(s => s.trim()) : [];
+
+        const usuarioLogado = localStorage.getItem('usuario_logado');
+        
+        if (!usuarioLogado) {
+            mostrarMensagem('tarefa-msg', 'Você precisa fazer login primeiro.', 'error');
+            return;
+        }
 
         try {
             const resposta = await fetch('/api/tarefas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ titulo, carga, estimativa, status, pre_requisitos: preRequisitos })
+                body: JSON.stringify({ 
+                    titulo, carga, estimativa, status, pre_requisitos: preRequisitos,
+                    usuario_logado: usuarioLogado
+                })
             });
             const dados = await resposta.json();
             
