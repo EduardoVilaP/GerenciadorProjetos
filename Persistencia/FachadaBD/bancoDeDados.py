@@ -1,13 +1,16 @@
-#Criando um singleton para servir como banco de dados enquannto o programa esta rodando
+"""
+Modulo que define a classe BancoDados utilizando o padrao Singleton
+para gerenciar o armazenamento em memoria de usuarios e tarefas durante a execucao.
+"""
+
 class BancoDados:
+    """Implementa um repositorio centralizado em memoria utilizando o padrao Singleton."""
 
     instancia = None
 
-    #Metodo responsavel pela unica instanciacao dessa classe
     def __new__(cls):
-        #Se a instancia nao existir devemos cria-la
+        """Controla a criacao da instancia unica da classe e inicializa as estruturas de dados."""
         if cls.instancia is None:
-            #Crianndo a unica instancia dessa classe
             cls.instancia = super().__new__(cls)
 
             #Criando dicionarios para guardar os usuarios totais, os integrantes e os gerentes
@@ -15,23 +18,24 @@ class BancoDados:
 
             # Dicionario para salvar as tarefas
             cls.instancia.tarefas = {}
+
             # ID de cada tarefa
             cls.instancia.id_tarefa_seq = 1
 
         return cls.instancia
 
-    #Metodo para cadastrar usuarios
     def registrarUsuario(self, usuario_objeto):
+        """Armazena um objeto de usuario no dicionario interno utilizando o email como chave."""
         email = usuario_objeto.get_email()
         self.usuarios[email] = usuario_objeto
         return
 
-    # Retorna o objeto instanciado com todos os metodos dele
     def buscar_usuario(self, email):
+        """Busca e retorna o objeto de usuario correspondente ao email fornecido, ou None se nao existir."""
         return self.usuarios.get(email)
 
-    # Registra nova tarefa e retorna seu ID
     def registrar_tarefa(self, tarefa_objeto):
+        """Registra uma nova tarefa no dicionario utilizando um ID sequencial e incrementa o contador."""
         id_atual = self.id_tarefa_seq
         self.tarefas[id_atual] = tarefa_objeto
         self.id_tarefa_seq += 1

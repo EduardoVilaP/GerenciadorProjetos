@@ -1,11 +1,16 @@
+"""
+Modulo que define a entidade Gerente, herdando de Usuario.
+"""
+
 from usuario import Usuario
 
-#Classe referente a gerente, um tipo de usuario
 class Gerente(Usuario):
+    """Representa um usuario com perfil de Gerente no sistema."""
 
-    #Metodo construtor do gerente
     def __init__(self, nome, senha, email):
+        """Inicializa um novo gerente chamando o construtor da classe pai (Usuario)."""
         super().__init__(nome, senha, email)
 
     def get_papel(self):
+        """Retorna a string identificadora do papel deste usuario."""
         return "Gerente"
