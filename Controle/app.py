@@ -20,6 +20,7 @@ while BASE_DIR and not os.path.exists(os.path.join(BASE_DIR, 'Dominio')):
 
 # Adiciona diretorios ao sys.path
 sys.path.append(os.path.join(BASE_DIR, 'Dominio', 'Equipe'))
+sys.path.append(os.path.join(BASE_DIR, 'Dominio'))
 sys.path.append(os.path.join(BASE_DIR, 'Dominio', 'Projeto', 'Tarefa'))
 sys.path.append(os.path.join(BASE_DIR, 'Persistencia', 'FachadaBD'))
 sys.path.append(os.path.join(BASE_DIR, 'Controle'))
@@ -31,6 +32,7 @@ from bancoDeDados import BancoDados
 from SistemaLogin.autenticacao import ServicoAutenticacao
 from ControladorEquipe.controlador_equipe import ControladorEquipe
 from ControladorTarefas.controlador_tarefa import ControladorTarefa
+from ControladorProjetos.controlador_projetos import ControladorProjeto
 
 app = Flask(__name__)
 
@@ -39,6 +41,7 @@ banco = BancoDados()
 servico_autenticacao = ServicoAutenticacao(banco)
 controle_equipe = ControladorEquipe(banco)
 controle_tarefa = ControladorTarefa(banco)
+controle_projeto = ControladorProjeto(banco)
 
 # Configura e registra o Usuario Admin Padrao no sistema
 admin = Gerente(nome="Admin", senha="123", email="admin@projeto.com")
@@ -118,6 +121,60 @@ def criar_tarefa():
     )
     return jsonify(resposta), status_code
 
+# ==========================================
+# ROTAS DE PROJETOS
+# ==========================================
+
+@app.route('/api/projetos', methods=['GET'])
+def listar_projetos():
+    """Endpoint GET para listar os projetos do gerente logado."""
+
+    email_gerente = request.args.get('usuario_logado')
+
+    gerente = banco.buscar_usuario(email_gerente)
+
+    if gerente is None:
+        return jsonify({"erro": "Gerente não encontrado"}), 404
+
+    projetos = controle_projeto.visualizarProjeto(gerente)
+
+    resposta = []
+
+    for projeto in projetos:
+        resposta.append({
+            "nome": projeto.get_nome()
+        })
+
+    return jsonify(resposta), 200
+
+
+@app.route('/api/projetos', methods=['POST'])
+def criar_projeto():
+    """Endpoint POST para criar um novo projeto."""
+
+    dados = request.json or {}
+
+    email_gerente = dados.get('usuario_logado')
+    nome_projeto = dados.get('nome')
+
+    gerente = banco.buscar_usuario(email_gerente)
+
+    if gerente is None:
+        return jsonify({"erro": "Gerente não encontrado"}), 404
+
+    resultado = controle_projeto.criarProjeto(
+        nomeProjeto=nome_projeto,
+        gerente=gerente
+    )
+
+    if resultado:
+        return jsonify({
+            "mensagem": "Projeto criado com sucesso"
+        }), 201
+
+    return jsonify({
+        "erro": "Já existe um projeto com esse nome"
+    }), 400
 
 if __name__ == '__main__':
     print("Servidor rodando! Acesse http://127.0.0.1:5000 no seu navegador.")

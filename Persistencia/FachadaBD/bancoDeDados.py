@@ -19,8 +19,14 @@ class BancoDados:
             # Dicionario para salvar as tarefas
             cls.instancia.tarefas = {}
 
+            # Dicionário para salvar os projetos
+            cls.instancia.projetos = {}
+
             # ID de cada tarefa
             cls.instancia.id_tarefa_seq = 1
+
+            # ID de cada projeto
+            cls.instancia.id_projeto_seq = 1
 
         return cls.instancia
 
@@ -40,3 +46,12 @@ class BancoDados:
         self.tarefas[id_atual] = tarefa_objeto
         self.id_tarefa_seq += 1
         return id_atual
+
+    def registrar_projeto(self, projeto):
+        id_projeto = self.id_projeto_seq
+        self.projetos[id_projeto] = projeto
+        self.id_projeto_seq +=1
+        return id_projeto
+
+    def buscar_projeto(self, id_projeto):
+        return self.projetos.get(id_projeto)

@@ -1,300 +1,1284 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Gestão de Projetos</title>
+
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f4f4f9; }
-        h1 { text-align: center; color: #333; }
-        .section { background: #fff; border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { background-color: #28a745; color: white; border: none; padding: 10px 15px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; }
-        button:hover { background-color: #218838; }
-        .message { margin-top: 10px; font-weight: bold; text-align: center; }
-        .success { color: green; }
-        .error { color: red; }
-        .hidden { display: none; }
-        ul { background: #e9ecef; padding: 15px 30px; border-radius: 5px; }
-        li { margin-bottom: 8px; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .section {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .logout-button {
+            background-color: #dc3545;
+            width: auto;
+            margin-bottom: 20px;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .message {
+            margin-top: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        ul {
+            background: #e9ecef;
+            padding: 15px 30px;
+            border-radius: 5px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .projeto-item {
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
+
 <body>
+
     <h1>Sistema de Gestão de Projetos</h1>
-    <!-- Botao de Logout -->
+
+
+    <!-- ========================================== -->
+    <!-- PAINEL DO USUARIO -->
+    <!-- ========================================== -->
+
     <div id="painel-usuario" class="hidden">
-        <button onclick="fazerLogout()" style="background-color: #dc3545; width: auto; margin-bottom: 20px;">Sair (Logout)</button>
+
+        <button
+            onclick="fazerLogout()"
+            class="logout-button">
+            Sair (Logout)
+        </button>
+
     </div>
 
-    <!-- Tela de Login -->
+
+    <!-- ========================================== -->
+    <!-- LOGIN -->
+    <!-- ========================================== -->
+
     <div class="section" id="login-section">
+
         <h2>Login</h2>
+
         <div class="form-group">
-            <label for="login-papel">Tipo de Acesso:</label>
+
+            <label for="login-papel">
+                Tipo de Acesso:
+            </label>
+
             <select id="login-papel">
-                <option value="Integrante">Integrante</option>
-                <option value="Gerente">Gerente</option>
+
+                <option value="Integrante">
+                    Integrante
+                </option>
+
+                <option value="Gerente">
+                    Gerente
+                </option>
+
             </select>
+
         </div>
+
+
         <div class="form-group">
-            <label for="login-email">Email:</label>
-            <input type="email" id="login-email" placeholder="Digite seu email">
+
+            <label for="login-email">
+                Email:
+            </label>
+
+            <input
+                type="email"
+                id="login-email"
+                placeholder="Digite seu email">
+
         </div>
+
+
         <div class="form-group">
-            <label for="login-senha">Senha:</label>
-            <input type="password" id="login-senha" placeholder="Digite sua senha">
+
+            <label for="login-senha">
+                Senha:
+            </label>
+
+            <input
+                type="password"
+                id="login-senha"
+                placeholder="Digite sua senha">
+
         </div>
-        <button onclick="fazerLogin()">Entrar</button>
-        <div id="login-msg" class="message"></div>
+
+
+        <button onclick="fazerLogin()">
+            Entrar
+        </button>
+
+
+        <div
+            id="login-msg"
+            class="message">
+        </div>
+
     </div>
 
-    <!-- Visao Geral: Tarefas (Acessivel por Gerentes e Integrantes) -->
-    <div class="section hidden" id="tarefas-section">
+
+    <!-- ========================================== -->
+    <!-- PROJETOS -->
+    <!-- ========================================== -->
+
+    <div
+        class="section hidden"
+        id="projetos-section">
+
+        <h2>Meus Projetos</h2>
+
+
+        <ul id="lista-projetos">
+        </ul>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- CRIAR PROJETO - SOMENTE GERENTE -->
+    <!-- ========================================== -->
+
+    <div
+        class="section hidden"
+        id="criar-projeto-section">
+
+        <h2>Criar Projeto</h2>
+
+
+        <div class="form-group">
+
+            <label for="projeto-nome">
+                Nome do Projeto:
+            </label>
+
+            <input
+                type="text"
+                id="projeto-nome"
+                placeholder="Digite o nome do projeto">
+
+        </div>
+
+
+        <button onclick="criarProjeto()">
+            Criar Projeto
+        </button>
+
+
+        <div
+            id="projeto-msg"
+            class="message">
+        </div>
+
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- TAREFAS -->
+    <!-- ========================================== -->
+
+    <div
+        class="section hidden"
+        id="tarefas-section">
+
         <h2>Tarefas Existentes</h2>
-        <ul id="lista-tarefas"></ul>
+
+        <ul id="lista-tarefas">
+        </ul>
+
     </div>
 
-    <!-- Visao Restrita do Gerente: Visualizar Integrantes -->
-    <div class="section hidden" id="integrantes-section">
+
+    <!-- ========================================== -->
+    <!-- INTEGRANTES -->
+    <!-- ========================================== -->
+
+    <div
+        class="section hidden"
+        id="integrantes-section">
+
         <h2>Integrantes da Equipe</h2>
-        <ul id="lista-integrantes"></ul>
+
+        <ul id="lista-integrantes">
+        </ul>
+
     </div>
 
-    <!-- Visao Restrita do Gerente: Cadastrar Integrante -->
-    <div class="section hidden" id="cadastro-integrante-section">
+
+    <!-- ========================================== -->
+    <!-- CADASTRAR INTEGRANTE -->
+    <!-- ========================================== -->
+
+    <div
+        class="section hidden"
+        id="cadastro-integrante-section">
+
         <h2>Cadastrar Integrante</h2>
+
+
         <div class="form-group">
-            <label for="int-nome">Nome:</label>
-            <input type="text" id="int-nome" placeholder="Nome completo">
+
+            <label for="int-nome">
+                Nome:
+            </label>
+
+            <input
+                type="text"
+                id="int-nome"
+                placeholder="Nome completo">
+
         </div>
+
+
         <div class="form-group">
-            <label for="int-email">Email:</label>
-            <input type="email" id="int-email" placeholder="Email corporativo">
+
+            <label for="int-email">
+                Email:
+            </label>
+
+            <input
+                type="email"
+                id="int-email"
+                placeholder="Email corporativo">
+
         </div>
+
+
         <div class="form-group">
-            <label for="int-senha">Senha:</label>
-            <input type="password" id="int-senha" placeholder="Crie uma senha">
+
+            <label for="int-senha">
+                Senha:
+            </label>
+
+            <input
+                type="password"
+                id="int-senha"
+                placeholder="Crie uma senha">
+
         </div>
+
+
         <div class="form-group">
-            <label for="int-esforco">Pontos de Esforço (Capacidade):</label>
-            <input type="number" id="int-esforco" placeholder="Ex: 10">
+
+            <label for="int-esforco">
+                Pontos de Esforço (Capacidade):
+            </label>
+
+            <input
+                type="number"
+                id="int-esforco"
+                placeholder="Ex: 10">
+
         </div>
-        <button onclick="cadastrarIntegrante()">Cadastrar</button>
-        <div id="cadastro-msg" class="message"></div>
+
+
+        <button onclick="cadastrarIntegrante()">
+            Cadastrar
+        </button>
+
+
+        <div
+            id="cadastro-msg"
+            class="message">
+        </div>
+
     </div>
 
-    <!-- Visao Restrita do Gerente: Criar Tarefa -->
-    <div class="section hidden" id="criar-tarefa-section">
+
+    <!-- ========================================== -->
+    <!-- CRIAR TAREFA -->
+    <!-- ========================================== -->
+
+    <div
+        class="section hidden"
+        id="criar-tarefa-section">
+
         <h2>Criar Tarefa</h2>
+
+
         <div class="form-group">
-            <label for="tar-titulo">Título:</label>
-            <input type="text" id="tar-titulo" placeholder="Título da tarefa">
+
+            <label for="tar-titulo">
+                Título:
+            </label>
+
+            <input
+                type="text"
+                id="tar-titulo"
+                placeholder="Título da tarefa">
+
         </div>
+
+
         <div class="form-group">
-            <label for="tar-carga">Carga (Pontos de Esforço Exigidos):</label>
-            <input type="number" id="tar-carga" placeholder="Ex: 5">
+
+            <label for="tar-carga">
+                Carga (Pontos de Esforço Exigidos):
+            </label>
+
+            <input
+                type="number"
+                id="tar-carga"
+                placeholder="Ex: 5">
+
         </div>
+
+
         <div class="form-group">
-            <label for="tar-estimativa">Estimativa (Tempo de conclusão):</label>
-            <input type="text" id="tar-estimativa" placeholder="Ex: 3 dias">
+
+            <label for="tar-estimativa">
+                Estimativa (Tempo de conclusão):
+            </label>
+
+            <input
+                type="text"
+                id="tar-estimativa"
+                placeholder="Ex: 3 dias">
+
         </div>
+
+
         <div class="form-group">
-            <label for="tar-status">Status Inicial:</label>
+
+            <label for="tar-status">
+                Status Inicial:
+            </label>
+
             <select id="tar-status">
-                <option value="Pendente">Pendente</option>
-                <option value="Em Andamento">Em Andamento</option>
-                <option value="Concluída">Concluída</option>
+
+                <option value="Pendente">
+                    Pendente
+                </option>
+
+                <option value="Em Andamento">
+                    Em Andamento
+                </option>
+
+                <option value="Concluída">
+                    Concluída
+                </option>
+
             </select>
+
         </div>
+
+
         <div class="form-group">
-            <label for="tar-prereq">Pré-requisitos (Títulos separados por vírgula):</label>
-            <input type="text" id="tar-prereq" placeholder="Ex: Tarefa A, Tarefa B">
+
+            <label for="tar-prereq">
+                Pré-requisitos (Títulos separados por vírgula):
+            </label>
+
+            <input
+                type="text"
+                id="tar-prereq"
+                placeholder="Ex: Tarefa A, Tarefa B">
+
         </div>
-        <button onclick="criarTarefa()">Adicionar Tarefa</button>
-        <div id="tarefa-msg" class="message"></div>
+
+
+        <button onclick="criarTarefa()">
+            Adicionar Tarefa
+        </button>
+
+
+        <div
+            id="tarefa-msg"
+            class="message">
+        </div>
+
     </div>
+
+
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT -->
+    <!-- ========================================== -->
 
     <script>
-    // Funcao para fazer login
-    async function fazerLogin() {
-        const papel = document.getElementById('login-papel').value;
-        const email = document.getElementById('login-email').value;
-        const senha = document.getElementById('login-senha').value;
-        
-        try {
-            const resposta = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, senha, papel })
-            });
-            const dados = await resposta.json();
-            
-            if(resposta.ok) {
-                localStorage.setItem('usuario_logado', email); 
-                localStorage.setItem('papel_logado', dados.papel);
-                configurarInterfacePorPapel(dados.papel);
-            } else {
-                mostrarMensagem('login-msg', dados.erro, 'error');
-            }
-        } catch (error) {
-            mostrarMensagem('login-msg', 'Erro de conexão com o servidor.', 'error');
-        }
-    }
 
-    // Disponibiliza interface com base no papel do usuario
-    function configurarInterfacePorPapel(papel) {
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('painel-usuario').classList.remove('hidden');
-        
-        // Exibe tarefas para ambos os perfis
-        document.getElementById('tarefas-section').classList.remove('hidden');
-        carregarTarefas();
 
-        if (papel === 'Gerente') {
-            // Exibe seções exclusivas de gerente
-            document.getElementById('integrantes-section').classList.remove('hidden');
-            document.getElementById('cadastro-integrante-section').classList.remove('hidden');
-            document.getElementById('criar-tarefa-section').classList.remove('hidden');
-            carregarIntegrantes();
-        }
-    }
+        // ==========================================
+        // LOGIN
+        // ==========================================
 
-    // Lista as tarefas de um projeto
-    async function carregarTarefas() {
-        try {
-            const resposta = await fetch('/api/tarefas');
-            const tarefas = await resposta.json();
-            const lista = document.getElementById('lista-tarefas');
-            lista.innerHTML = '';
-            
-            if (tarefas.length === 0) {
-                lista.innerHTML = '<li>Nenhuma tarefa cadastrada.</li>';
-                return;
-            }
+        async function fazerLogin() {
 
-            tarefas.forEach(t => {
-                lista.innerHTML += `<li><strong>${t.titulo}</strong> - Status: ${t.status} | Estimativa: ${t.estimativa} | Carga: ${t.carga}</li>`;
-            });
-        } catch (e) {
-            console.error('Erro ao carregar tarefas', e);
-        }
-    }
+            const papel =
+                document.getElementById('login-papel').value;
 
-    // Lista os integrantes de um projeto
-    async function carregarIntegrantes() {
-        try {
-            const usuarioLogado = localStorage.getItem('usuario_logado');
-            const resposta = await fetch(`/api/integrantes?usuario_logado=${usuarioLogado}`);
-            const integrantes = await resposta.json();
-            const lista = document.getElementById('lista-integrantes');
-            lista.innerHTML = '';
+            const email =
+                document.getElementById('login-email').value;
 
-            if (!resposta.ok || integrantes.length === 0) {
-                lista.innerHTML = '<li>Nenhum integrante cadastrado.</li>';
-                return;
+            const senha =
+                document.getElementById('login-senha').value;
+
+
+            try {
+
+                const resposta = await fetch('/api/login', {
+
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({
+                        email,
+                        senha,
+                        papel
+                    })
+
+                });
+
+
+                const dados =
+                    await resposta.json();
+
+
+                if (resposta.ok) {
+
+                    localStorage.setItem(
+                        'usuario_logado',
+                        email
+                    );
+
+                    localStorage.setItem(
+                        'papel_logado',
+                        dados.papel
+                    );
+
+
+                    configurarInterfacePorPapel(
+                        dados.papel
+                    );
+
+                }
+
+                else {
+
+                    mostrarMensagem(
+                        'login-msg',
+                        dados.erro,
+                        'error'
+                    );
+
+                }
+
             }
 
-            integrantes.forEach(i => {
-                lista.innerHTML += `<li><strong>${i.nome}</strong> (${i.email}) - Capacidade: ${i.pontos_de_esforco} pts</li>`;
-            });
-        } catch (e) {
-            console.error('Erro ao carregar integrantes', e);
+            catch (error) {
+
+                mostrarMensagem(
+                    'login-msg',
+                    'Erro de conexão com o servidor.',
+                    'error'
+                );
+
+            }
+
         }
-    }
 
-    // Cadastro de integrante
-    async function cadastrarIntegrante() {
-        const nome = document.getElementById('int-nome').value;
-        const email = document.getElementById('int-email').value;
-        const senha = document.getElementById('int-senha').value;
-        const esforco = parseInt(document.getElementById('int-esforco').value) || 0;
-        const usuarioLogado = localStorage.getItem('usuario_logado');
 
-        try {
-            const resposta = await fetch('/api/integrantes', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    nome, 
-                    email, 
-                    senha, 
-                    pontos_de_esforco: esforco, 
-                    usuario_logado: usuarioLogado 
-                })
-            });
-            const dados = await resposta.json();
-            
-            if(resposta.ok) {
-                mostrarMensagem('cadastro-msg', dados.mensagem, 'success');
-                // Limpa os campos
-                document.getElementById('int-nome').value = '';
-                document.getElementById('int-email').value = '';
-                document.getElementById('int-senha').value = '';
-                document.getElementById('int-esforco').value = '';
+        // ==========================================
+        // CONFIGURAR INTERFACE
+        // ==========================================
+
+        function configurarInterfacePorPapel(papel) {
+
+            document
+                .getElementById('login-section')
+                .classList.add('hidden');
+
+
+            document
+                .getElementById('painel-usuario')
+                .classList.remove('hidden');
+
+
+            // Projetos
+            document
+                .getElementById('projetos-section')
+                .classList.remove('hidden');
+
+            carregarProjetos();
+
+
+            // Tarefas
+            document
+                .getElementById('tarefas-section')
+                .classList.remove('hidden');
+
+            carregarTarefas();
+
+
+            // Funcionalidades exclusivas do gerente
+
+            if (papel === 'Gerente') {
+
+                document
+                    .getElementById('integrantes-section')
+                    .classList.remove('hidden');
+
+
+                document
+                    .getElementById('cadastro-integrante-section')
+                    .classList.remove('hidden');
+
+
+                document
+                    .getElementById('criar-tarefa-section')
+                    .classList.remove('hidden');
+
+
+                document
+                    .getElementById('criar-projeto-section')
+                    .classList.remove('hidden');
+
+
                 carregarIntegrantes();
-            } else {
-                mostrarMensagem('cadastro-msg', dados.erro, 'error');
+
             }
-        } catch (error) {
-            mostrarMensagem('cadastro-msg', 'Erro de conexão.', 'error');
+
         }
-    }
 
-    // Cria uma tarefa
-    async function criarTarefa() {
-        const titulo = document.getElementById('tar-titulo').value;
-        const carga = parseInt(document.getElementById('tar-carga').value) || 0;
-        const estimativa = document.getElementById('tar-estimativa').value;
-        const status = document.getElementById('tar-status').value;
-        const prereqRaw = document.getElementById('tar-prereq').value;
-        const preRequisitos = prereqRaw ? prereqRaw.split(',').map(s => s.trim()) : [];
-        const usuarioLogado = localStorage.getItem('usuario_logado');
 
-        try {
-            const resposta = await fetch('/api/tarefas', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    titulo, 
-                    carga, 
-                    estimativa, 
-                    status, 
-                    pre_requisitos: preRequisitos, 
-                    usuario_logado: usuarioLogado 
-                })
-            });
-            const dados = await resposta.json();
-            
-            if(resposta.ok) {
-                mostrarMensagem('tarefa-msg', dados.mensagem, 'success');
-                // Limpa os campos
-                document.getElementById('tar-titulo').value = '';
-                document.getElementById('tar-carga').value = '';
-                document.getElementById('tar-estimativa').value = '';
-                document.getElementById('tar-prereq').value = '';
-                carregarTarefas();
-            } else {
-                mostrarMensagem('tarefa-msg', dados.erro, 'error');
+        // ==========================================
+        // PROJETOS
+        // ==========================================
+
+        async function carregarProjetos() {
+
+            try {
+
+                const usuarioLogado =
+                    localStorage.getItem('usuario_logado');
+
+
+                const resposta = await fetch(
+                    `/api/projetos?usuario_logado=${encodeURIComponent(usuarioLogado)}`
+                );
+
+
+                const projetos =
+                    await resposta.json();
+
+
+                const lista =
+                    document.getElementById(
+                        'lista-projetos'
+                    );
+
+
+                lista.innerHTML = '';
+
+
+                if (!resposta.ok) {
+
+                    lista.innerHTML =
+                        '<li>Erro ao carregar projetos.</li>';
+
+                    return;
+
+                }
+
+
+                if (projetos.length === 0) {
+
+                    lista.innerHTML =
+                        '<li>Nenhum projeto criado.</li>';
+
+                    return;
+
+                }
+
+
+                projetos.forEach(projeto => {
+
+                    lista.innerHTML += `
+                        <li class="projeto-item">
+                            <strong>
+                                ${projeto.nome}
+                            </strong>
+                        </li>
+                    `;
+
+                });
+
             }
-        } catch (error) {
-            mostrarMensagem('tarefa-msg', 'Erro de conexão.', 'error');
+
+            catch (error) {
+
+                console.error(
+                    'Erro ao carregar projetos:',
+                    error
+                );
+
+            }
+
         }
-    }
 
-    // Mostra mensagem
-    function mostrarMensagem(id, texto, classe) {
-        const el = document.getElementById(id);
-        el.innerText = texto;
-        el.className = `message ${classe}`;
-        setTimeout(() => { el.innerText = ''; }, 4000);
-    }
 
-    // Funcionamento do logout
-    function fazerLogout() {
-        localStorage.clear();
-        window.location.reload();
-    }
-</script>
+        // ==========================================
+        // CRIAR PROJETO
+        // ==========================================
+
+        async function criarProjeto() {
+
+            const nome =
+                document.getElementById(
+                    'projeto-nome'
+                ).value.trim();
+
+
+            const usuarioLogado =
+                localStorage.getItem(
+                    'usuario_logado'
+                );
+
+
+            if (!nome) {
+
+                mostrarMensagem(
+                    'projeto-msg',
+                    'Digite o nome do projeto.',
+                    'error'
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const resposta = await fetch(
+                    '/api/projetos',
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+
+                            nome: nome,
+
+                            usuario_logado:
+                                usuarioLogado
+
+                        })
+
+                    }
+                );
+
+
+                const dados =
+                    await resposta.json();
+
+
+                if (resposta.ok) {
+
+                    mostrarMensagem(
+                        'projeto-msg',
+                        dados.mensagem,
+                        'success'
+                    );
+
+
+                    document.getElementById(
+                        'projeto-nome'
+                    ).value = '';
+
+
+                    carregarProjetos();
+
+                }
+
+                else {
+
+                    mostrarMensagem(
+                        'projeto-msg',
+                        dados.erro,
+                        'error'
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                mostrarMensagem(
+                    'projeto-msg',
+                    'Erro de conexão.',
+                    'error'
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // TAREFAS
+        // ==========================================
+
+        async function carregarTarefas() {
+
+            try {
+
+                const resposta =
+                    await fetch('/api/tarefas');
+
+
+                const tarefas =
+                    await resposta.json();
+
+
+                const lista =
+                    document.getElementById(
+                        'lista-tarefas'
+                    );
+
+
+                lista.innerHTML = '';
+
+
+                if (tarefas.length === 0) {
+
+                    lista.innerHTML =
+                        '<li>Nenhuma tarefa cadastrada.</li>';
+
+                    return;
+
+                }
+
+
+                tarefas.forEach(t => {
+
+                    lista.innerHTML += `
+                        <li>
+                            <strong>
+                                ${t.titulo}
+                            </strong>
+
+                            - Status:
+                            ${t.status}
+
+                            | Estimativa:
+                            ${t.estimativa}
+
+                            | Carga:
+                            ${t.carga}
+                        </li>
+                    `;
+
+                });
+
+            }
+
+            catch (e) {
+
+                console.error(
+                    'Erro ao carregar tarefas',
+                    e
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // INTEGRANTES
+        // ==========================================
+
+        async function carregarIntegrantes() {
+
+            try {
+
+                const usuarioLogado =
+                    localStorage.getItem(
+                        'usuario_logado'
+                    );
+
+
+                const resposta = await fetch(
+                    `/api/integrantes?usuario_logado=${encodeURIComponent(usuarioLogado)}`
+                );
+
+
+                const integrantes =
+                    await resposta.json();
+
+
+                const lista =
+                    document.getElementById(
+                        'lista-integrantes'
+                    );
+
+
+                lista.innerHTML = '';
+
+
+                if (
+                    !resposta.ok ||
+                    integrantes.length === 0
+                ) {
+
+                    lista.innerHTML =
+                        '<li>Nenhum integrante cadastrado.</li>';
+
+                    return;
+
+                }
+
+
+                integrantes.forEach(i => {
+
+                    lista.innerHTML += `
+                        <li>
+
+                            <strong>
+                                ${i.nome}
+                            </strong>
+
+                            (${i.email})
+
+                            - Capacidade:
+                            ${i.pontos_de_esforco}
+                            pts
+
+                        </li>
+                    `;
+
+                });
+
+            }
+
+            catch (e) {
+
+                console.error(
+                    'Erro ao carregar integrantes',
+                    e
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // CADASTRAR INTEGRANTE
+        // ==========================================
+
+        async function cadastrarIntegrante() {
+
+            const nome =
+                document.getElementById(
+                    'int-nome'
+                ).value;
+
+
+            const email =
+                document.getElementById(
+                    'int-email'
+                ).value;
+
+
+            const senha =
+                document.getElementById(
+                    'int-senha'
+                ).value;
+
+
+            const esforco =
+                parseInt(
+                    document.getElementById(
+                        'int-esforco'
+                    ).value
+                ) || 0;
+
+
+            const usuarioLogado =
+                localStorage.getItem(
+                    'usuario_logado'
+                );
+
+
+            try {
+
+                const resposta = await fetch(
+                    '/api/integrantes',
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+
+                            nome,
+                            email,
+                            senha,
+
+                            pontos_de_esforco:
+                                esforco,
+
+                            usuario_logado:
+                                usuarioLogado
+
+                        })
+
+                    }
+                );
+
+
+                const dados =
+                    await resposta.json();
+
+
+                if (resposta.ok) {
+
+                    mostrarMensagem(
+                        'cadastro-msg',
+                        dados.mensagem,
+                        'success'
+                    );
+
+
+                    document.getElementById(
+                        'int-nome'
+                    ).value = '';
+
+
+                    document.getElementById(
+                        'int-email'
+                    ).value = '';
+
+
+                    document.getElementById(
+                        'int-senha'
+                    ).value = '';
+
+
+                    document.getElementById(
+                        'int-esforco'
+                    ).value = '';
+
+
+                    carregarIntegrantes();
+
+                }
+
+                else {
+
+                    mostrarMensagem(
+                        'cadastro-msg',
+                        dados.erro,
+                        'error'
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                mostrarMensagem(
+                    'cadastro-msg',
+                    'Erro de conexão.',
+                    'error'
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // CRIAR TAREFA
+        // ==========================================
+
+        async function criarTarefa() {
+
+            const titulo =
+                document.getElementById(
+                    'tar-titulo'
+                ).value;
+
+
+            const carga =
+                parseInt(
+                    document.getElementById(
+                        'tar-carga'
+                    ).value
+                ) || 0;
+
+
+            const estimativa =
+                document.getElementById(
+                    'tar-estimativa'
+                ).value;
+
+
+            const status =
+                document.getElementById(
+                    'tar-status'
+                ).value;
+
+
+            const prereqRaw =
+                document.getElementById(
+                    'tar-prereq'
+                ).value;
+
+
+            const preRequisitos =
+                prereqRaw
+                    ? prereqRaw
+                        .split(',')
+                        .map(s => s.trim())
+                    : [];
+
+
+            const usuarioLogado =
+                localStorage.getItem(
+                    'usuario_logado'
+                );
+
+
+            try {
+
+                const resposta = await fetch(
+                    '/api/tarefas',
+                    {
+
+                        method: 'POST',
+
+                        headers: {
+                            'Content-Type':
+                                'application/json'
+                        },
+
+                        body: JSON.stringify({
+
+                            titulo,
+
+                            carga,
+
+                            estimativa,
+
+                            status,
+
+                            pre_requisitos:
+                                preRequisitos,
+
+                            usuario_logado:
+                                usuarioLogado
+
+                        })
+
+                    }
+                );
+
+
+                const dados =
+                    await resposta.json();
+
+
+                if (resposta.ok) {
+
+                    mostrarMensagem(
+                        'tarefa-msg',
+                        dados.mensagem,
+                        'success'
+                    );
+
+
+                    document.getElementById(
+                        'tar-titulo'
+                    ).value = '';
+
+
+                    document.getElementById(
+                        'tar-carga'
+                    ).value = '';
+
+
+                    document.getElementById(
+                        'tar-estimativa'
+                    ).value = '';
+
+
+                    document.getElementById(
+                        'tar-prereq'
+                    ).value = '';
+
+
+                    carregarTarefas();
+
+                }
+
+                else {
+
+                    mostrarMensagem(
+                        'tarefa-msg',
+                        dados.erro,
+                        'error'
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                mostrarMensagem(
+                    'tarefa-msg',
+                    'Erro de conexão.',
+                    'error'
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // MENSAGENS
+        // ==========================================
+
+        function mostrarMensagem(
+            id,
+            texto,
+            classe
+        ) {
+
+            const el =
+                document.getElementById(id);
+
+
+            el.innerText = texto;
+
+
+            el.className =
+                `message ${classe}`;
+
+
+            setTimeout(() => {
+
+                el.innerText = '';
+
+            }, 4000);
+
+        }
+
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        function fazerLogout() {
+
+            localStorage.clear();
+
+            window.location.reload();
+
+        }
+
+
+    </script>
+
 </body>
+
 </html>
