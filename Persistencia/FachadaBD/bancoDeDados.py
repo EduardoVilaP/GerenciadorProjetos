@@ -55,3 +55,17 @@ class BancoDados:
 
     def buscar_projeto(self, id_projeto):
         return self.projetos.get(id_projeto)
+
+    def buscar_projetos_por_usuario(self, usuario):
+        """Retorna todos os projetos onde o usuário é Gerente ou Integrante."""
+        projetos_usuario = []
+        email = usuario.get_email()
+        papel = usuario.get_papel()
+
+        for id_proj, projeto in self.projetos.items():
+            if papel == "Gerente" and projeto.get_gerente().get_email() == email:
+                projetos_usuario.append({"id": id_proj, "objeto": projeto})
+            elif papel == "Integrante" and email in projeto.get_integrantes():
+                projetos_usuario.append({"id": id_proj, "objeto": projeto})
+
+        return projetos_usuario

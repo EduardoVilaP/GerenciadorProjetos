@@ -39,3 +39,92 @@ class ControladorProjeto:
         self.banco.registrar_projeto(project)
 
         return True
+
+    def adicionarIntegrante(self, id_projeto, email_integrante, gerente):
+        """Associa um integrante ja cadastrado no sistema a um projeto especifico."""
+        projeto = self.banco.buscar_projeto(id_projeto)
+        if not projeto:
+            return False, "Projeto não encontrado."
+
+        # Valida se quem esta tentando adicionar e o gerente dono do projeto
+        if projeto.get_gerente().get_email() != gerente.get_email():
+            return False, "Apenas o gerente responsável pelo projeto pode adicionar integrantes."
+
+        # Verifica se o integrante existe no banco
+        integrante = self.banco.buscar_usuario(email_integrante)
+        if not integrante or integrante.get_papel() != "Integrante":
+            return False, "Integrante não encontrado no sistema."
+
+        # Verifica se o e-mail ja esta cadastrado no projeto
+        if email_integrante in projeto.get_integrantes():
+            return False, "Integrante já está associado a este projeto."
+
+        # Adiciona o e-mail do integrante na lista de integrantes do projeto
+        projeto.get_integrantes().append(email_integrante)
+        return True, "Integrante vinculado ao projeto com sucesso!"
+
+    def retornarProjetosIntegrante(self, integrante):
+        """Retorna os projetos em que o integrante esta cadastrado."""
+        projetosIntegrante = []
+        email = integrante.get_email()
+
+        for projeto in self.banco.projetos.values():
+            if email in projeto.get_integrantes():
+                projetosIntegrante.append(projeto)
+
+        return projetosIntegrante
+
+    def obterDetalhesProjeto(self, id_projeto, usuario):
+        """
+        Carrega os dados de um projeto específico dependendo do perfil do usuário:
+        - Gerente: visualiza todas as tarefas e integrantes do projeto.
+        - Integrante: visualiza apenas as tarefas que foram atribuídas a ele.
+        """
+        projeto = self.banco.buscar_projeto(id_projeto)
+        if not projeto:
+            return None
+
+        papel = usuario.get_papel()
+        email_usuario = usuario.get_email()
+
+        # Resgata todas as tarefas associadas ao projeto
+        ids_tarefas_proj = projeto.get_tarefas()
+
+        tarefas_filtradas = []
+        for id_t in ids_tarefas_proj:
+            t = self.banco.tarefas.get(id_t)
+            if not t:
+                continue
+
+            # Se for Integrante, exibe apenas tarefas cujo realizador seja ele
+            if papel == "Integrante":
+                realizador = t.get_realizador()
+                if realizador != email_usuario:
+                    continue
+
+            tarefas_filtradas.append({
+                "id": id_t,
+                "titulo": t.get_titulo(),
+                "carga": t.get_carga(),
+                "estimativa": t.get_estimativa(),
+                "status": t.get_status()
+            })
+
+        # Mapeia os integrantes caso o usuário logado seja o Gerente
+        integrantes_detalhados = []
+        if papel == "Gerente":
+            for email_int in projeto.get_integrantes():
+                u_int = self.banco.buscar_usuario(email_int)
+                if u_int:
+                    integrantes_detalhados.append({
+                        "nome": u_int.get_nome(),
+                        "email": u_int.get_email()
+                    })
+
+        return {
+            "id": id_projeto,
+            "nome": projeto.get_nome(),
+            "papel_usuario": papel,
+            "tarefas": tarefas_filtradas,
+            "integrantes": integrantes_detalhados
+        }
