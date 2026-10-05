@@ -13,6 +13,8 @@ class Tarefa:
 
         self.__realizador = realizador;
 
+        self.__relatorios = []
+
     def get_titulo(self):
         return self.__titulo
 
@@ -46,3 +48,9 @@ class Tarefa:
             self.__pre_requisitos.append(tarefa_dependencia)
         else:
             raise ValueError("Dependencia ja cadastrada")
+
+    def adicionar_relatorio(self, relatorio):
+        self.__relatorios.append(relatorio)
+
+    def get_relatorios(self):
+        return self.__relatorios
