@@ -157,6 +157,8 @@ class ControladorTarefa:
                     if not outro_pendente:
                         t.atualizar_status("Pendente")
 
+            u = self.banco.buscar_usuario(tarefa.get_realizador())
+            u.set_pontos_de_esforco(u.get_pontos_de_esforco()+tarefa.get_carga())
             return {"sucesso": True, "mensagem": "Relatório salvo, tarefa concluída e dependências liberadas."}, 200
         
         tarefa.atualizar_status(novo_status)

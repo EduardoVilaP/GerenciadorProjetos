@@ -125,9 +125,28 @@
     <div class="section hidden" id="projeto-detalhes-section">
         <button onclick="voltarParaListaProjetos()" class="btn-voltar">← Voltar para Meus Projetos</button>
         <h2 id="titulo-projeto-atual"></h2>
+        <h4 id="info-carga-integrante" class="hidden" style="color: #007bff; margin-top: -10px; margin-bottom: 20px;"></h4>
 
         <h3>Tarefas do Projeto</h3>
         <ul id="lista-tarefas-projeto"></ul>
+
+        <!-- ÁREA DE ATUALIZAÇÃO DE TAREFA (Visível quando há tarefas em andamento) -->
+        <div id="painel-atualizacao-tarefa" class="hidden">
+            <hr>
+            <h3>Concluir Tarefa</h3>
+            <div class="form-group">
+                <label for="select-tarefa-andamento">Minhas Tarefas em Andamento:</label>
+                <select id="select-tarefa-andamento">
+                    <option value="">-- Selecione uma Tarefa --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="texto-relatorio">Relatório de Conclusão (Obrigatório):</label>
+                <textarea id="texto-relatorio" rows="4" placeholder="Descreva as atividades realizadas..."></textarea>
+            </div>
+            <button onclick="concluirTarefa()">Marcar como Concluída</button>
+            <div id="conclusao-msg" class="message"></div>
+        </div>
 
         <!-- ÁREA DO GERENTE NO PROJETO -->
         <div id="painel-gerente-projeto" class="hidden">
@@ -380,22 +399,67 @@
                 listaTarefas.innerHTML += `<li><strong>${t.titulo}</strong> - Status: ${t.status} | Estimativa: ${t.estimativa} | Carga: ${t.carga}</li>`;
             });
 
+            // Populando tarefas em andamento para o painel de conclusão
+            // -----------------------------------------------------
+            // NOVIDADE: Mostrar os pontos de esforço para o próprio Integrante
+            // -----------------------------------------------------
+            const infoCarga = document.getElementById('info-carga-integrante');
+            if (projeto.papel_usuario === 'Integrante' && projeto.carga_disponivel !== undefined) {
+                infoCarga.innerText = `Meus Pontos de Esforço Disponíveis: ${projeto.carga_disponivel}`;
+                infoCarga.classList.remove('hidden');
+            } else {
+                infoCarga.classList.add('hidden');
+            }
+
             const painelGerente = document.getElementById('painel-gerente-projeto');
             if (projeto.papel_usuario === 'Gerente') {
                 painelGerente.classList.remove('hidden');
-
                 const listaIntegrantes = document.getElementById('lista-integrantes-projeto');
                 listaIntegrantes.innerHTML = projeto.integrantes.length === 0 ? '<li>Nenhum integrante vinculado.</li>' : '';
+                
+                // -----------------------------------------------------
+                // NOVIDADE: Exibir lista de integrantes com carga e tarefas
+                // -----------------------------------------------------
                 projeto.integrantes.forEach(i => {
-                    listaIntegrantes.innerHTML += `<li><strong>${i.nome}</strong> (${i.email})</li>`;
+                    const tarefasTexto = (i.tarefas_atribuidas && i.tarefas_atribuidas.length > 0) 
+                        ? i.tarefas_atribuidas.join(', ') 
+                        : 'Nenhuma tarefa atribuída';
+
+                    listaIntegrantes.innerHTML += `
+                        <li>
+                            <strong>${i.nome}</strong> (${i.email})<br>
+                            <span style="font-size: 0.9em; color: #555; display: block; margin-top: 5px;">
+                                Carga Disponível: <strong>${i.pontos_de_esforco}</strong><br>
+                                Tarefas: ${tarefasTexto}
+                            </span>
+                        </li>
+                    `;
                 });
 
                 carregarIntegrantesDisponiveis();
                 popularSelectTarefasDestino();
-
                 popularSelectsAtribuicao(projeto);
             } else {
                 painelGerente.classList.add('hidden');
+            }
+            
+            // Re-aplica a lógica de exibir a interface de conclusão apenas se houver tarefa (feito anteriormente)
+            const painelAtualizacao = document.getElementById('painel-atualizacao-tarefa');
+            const selectTarefaAndamento = document.getElementById('select-tarefa-andamento');
+            if (selectTarefaAndamento) {
+                selectTarefaAndamento.innerHTML = '<option value="">-- Selecione uma Tarefa --</option>';
+                let temTarefaEmAndamento = false;
+                tarefasProjetoAtual.forEach(t => {
+                    if (t.status === "Em Andamento") {
+                        selectTarefaAndamento.innerHTML += `<option value="${t.id}">${t.titulo}</option>`;
+                        temTarefaEmAndamento = true;
+                    }
+                });
+                if (projeto.papel_usuario === 'Integrante' && temTarefaEmAndamento) {
+                    painelAtualizacao.classList.remove('hidden');
+                } else {
+                    painelAtualizacao.classList.add('hidden');
+                }
             }
         }
 
@@ -643,6 +707,45 @@
                 await entrarNoProjeto(idProjetoAtual); 
             } else {
                 mostrarMensagem('atribuicao-msg', dados.erro, 'error');
+            }
+        }
+
+        async function concluirTarefa() {
+            const idTarefa = document.getElementById('select-tarefa-andamento').value;
+            const relatorio = document.getElementById('texto-relatorio').value.trim();
+
+            if (!idTarefa) {
+                mostrarMensagem('conclusao-msg', 'Selecione uma tarefa para concluir.', 'error');
+                return;
+            }
+
+            // Cenário Alternativo: O sistema rejeita a entrada se não houver relatório
+            if (!relatorio) {
+                mostrarMensagem('conclusao-msg', 'O relatório é obrigatório para concluir a tarefa.', 'error');
+                return;
+            }
+
+            // Cenário Principal: Envia os dados para a API
+            const resposta = await fetch(`/api/tarefas/${idTarefa}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    novo_status: 'Concluída',
+                    texto_relatorio: relatorio
+                })
+            });
+
+            const dados = await resposta.json();
+
+            if (resposta.ok) {
+                mostrarMensagem('conclusao-msg', dados.mensagem, 'success');
+                document.getElementById('texto-relatorio').value = ''; 
+                
+                // Recarrega o projeto. 
+                // O backend já recalculou as dependências e alterou as tarefas bloqueadas para pendentes.
+                await entrarNoProjeto(idProjetoAtual);
+            } else {
+                mostrarMensagem('conclusao-msg', dados.erro, 'error');
             }
         }
     </script>

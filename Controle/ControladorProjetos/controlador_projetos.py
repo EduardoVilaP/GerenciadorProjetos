@@ -97,8 +97,8 @@ class ControladorProjeto:
                 continue
 
             # Se for Integrante, exibe apenas tarefas cujo realizador seja ele
+            realizador = t.get_realizador()
             if papel == "Integrante":
-                realizador = t.get_realizador()
                 if realizador != email_usuario:
                     continue
 
@@ -107,7 +107,8 @@ class ControladorProjeto:
                 "titulo": t.get_titulo(),
                 "carga": t.get_carga(),
                 "estimativa": t.get_estimativa(),
-                "status": t.get_status()
+                "status": t.get_status(),
+                "realizador": realizador
             })
 
         # Mapeia os integrantes caso o usuário logado seja o Gerente
@@ -116,15 +117,25 @@ class ControladorProjeto:
             for email_int in projeto.get_integrantes():
                 u_int = self.banco.buscar_usuario(email_int)
                 if u_int:
+
+                    tarefas_do_integrante = [tar["titulo"] for tar in tarefas_filtradas if tar.get("realizador") == email_int]
+
                     integrantes_detalhados.append({
                         "nome": u_int.get_nome(),
-                        "email": u_int.get_email()
+                        "email": u_int.get_email(),
+                        "pontos_de_esforco": u_int.get_pontos_de_esforco() if hasattr(u_int, 'get_pontos_de_esforco') else 0,
+                        "tarefas_atribuidas": tarefas_do_integrante
                     })
+        
+        carga_disponivel = None
+        if papel == "Integrante" and hasattr(usuario, 'get_pontos_de_esforco'):
+            carga_disponivel = usuario.get_pontos_de_esforco()
 
         return {
             "id": id_projeto,
             "nome": projeto.get_nome(),
             "papel_usuario": papel,
+            "carga_disponivel": carga_disponivel,
             "tarefas": tarefas_filtradas,
             "integrantes": integrantes_detalhados
         }

@@ -42,3 +42,7 @@ class Tarefa:
             self.__pre_requisitos.append(tarefa_dependencia_obj)
         else:
             raise ValueError("Dependência já cadastrada")
+
+    def adicionar_relatorio(self, relatorio_obj):
+        if relatorio_obj not in self.__relatorios:
+            self.__relatorios.append(relatorio_obj)
